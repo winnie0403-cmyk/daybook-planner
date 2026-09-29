@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f7f7f5" />
+    <title>Planner</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="page-header">
+        <div>
+          <p class="eyebrow">DAILY PLAN</p>
+          <h1 id="current-date">Loading date</h1>
+        </div>
+        <div class="date-meta" aria-label="Current local date and time">
+          <span id="current-year"></span>
+          <time id="current-time"></time>
+        </div>
+      </header>
+
+      <main id="planner">
+        <section id="yesterday-section" class="task-section" hidden>
+          <div class="section-heading">
+            <h2>YESTERDAY <span aria-hidden="true">·</span> UNFINISHED</h2>
+          </div>
+          <ul
+            id="yesterday-list"
+            class="task-list"
+            data-drop-zone="yesterday"
+            aria-label="Unfinished tasks from yesterday"
+          ></ul>
+        </section>
+
+        <section class="task-section today-section">
+          <div class="section-heading">
+            <h2>TODAY</h2>
+            <button id="start-focus" class="start-button" type="button" disabled>
+              START
+            </button>
+          </div>
+          <ul
+            id="today-list"
+            class="task-list"
+            data-drop-zone="today"
+            aria-label="Today's tasks"
+          ></ul>
+          <p id="empty-state" class="empty-state">Nothing planned yet.</p>
+        </section>
+
+        <section class="add-section" aria-label="Add a task">
+          <button id="open-add-form" class="add-task-button" type="button">
+            <span class="plus" aria-hidden="true">+</span>
+            <span>Add task</span>
+          </button>
+
+          <form id="add-task-form" class="add-task-form" novalidate hidden>
+            <div class="form-fields">
+              <label class="field task-name-field">
+                <span>Task name</span>
+                <input
+                  id="task-name"
+                  name="taskName"
+                  type="text"
+                  maxlength="120"
+                  autocomplete="off"
+                  placeholder="What needs your time?"
+                />
+              </label>
+
+              <label class="field duration-field">
+                <span>Hours</span>
+                <span class="input-with-suffix">
+                  <input
+                    id="task-hours"
+                    name="hours"
+                    type="text"
+                    inputmode="numeric"
+                    pattern="[0-9]*"
+                    maxlength="4"
+                    autocomplete="off"
+                    placeholder="0"
+                  />
+                  <span aria-hidden="true">h</span>
+                </span>
+              </label>
+
+              <label class="field duration-field">
+                <span>Minutes</span>
+                <span class="input-with-suffix">
+                  <input
+                    id="task-minutes"
+                    name="minutes"
+                    type="text"
+                    inputmode="numeric"
+                    pattern="[0-9]*"
+                    maxlength="4"
+                    autocomplete="off"
+                    placeholder="0"
+                  />
+                  <span aria-hidden="true">m</span>
+                </span>
+              </label>
+            </div>
+
+            <div class="form-footer">
+              <p id="form-error" class="form-error" role="alert"></p>
+              <div class="form-actions">
+                <button id="cancel-add-form" class="text-button" type="button">
+                  Cancel
+                </button>
+                <button class="primary-button" type="submit">Add task</button>
+              </div>
+            </div>
+          </form>
+        </section>
+      </main>
+    </div>
+
+    <section
+      id="focus-view"
+      class="focus-view"
+      data-mode="fullscreen"
+      aria-label="Focus timer"
+      hidden
+    >
+      <div class="focus-surface">
+        <div class="focus-content">
+          <p id="focus-task-name" class="focus-task-name"></p>
+          <time id="focus-time" class="focus-time" datetime="PT0S">00:00</time>
+        </div>
+        <button
+          id="focus-mode-toggle"
+          class="focus-mode-toggle"
+          type="button"
+          aria-label="Switch to floating focus"
+          title="Switch to floating focus"
+        >
+          <span class="mode-icon" aria-hidden="true"></span>
+        </button>
+        <button id="focus-exit" class="focus-exit-button" type="button">
+          EXIT
+        </button>
+
+        <div id="focus-exit-confirmation" class="focus-exit-confirmation" hidden>
+          <div class="focus-confirmation-panel">
+            <p class="focus-confirmation-eyebrow">END FOCUS</p>
+            <p class="focus-confirmation-prompt">Type this sentence exactly:</p>
+            <p class="focus-exit-phrase">
+              我确认这是我的主动选择，我接受提前结束本次专注。
+            </p>
+            <form id="focus-exit-form" novalidate>
+              <label class="visually-hidden" for="focus-exit-input">
+                Early exit confirmation sentence
+              </label>
+              <input
+                id="focus-exit-input"
+                class="focus-exit-input"
+                type="text"
+                autocomplete="off"
+                autocapitalize="off"
+                spellcheck="false"
+              />
+              <p id="focus-exit-error" class="focus-exit-error" role="alert"></p>
+              <div class="focus-confirmation-actions">
+                <button id="focus-exit-cancel" class="focus-confirmation-button" type="button">
+                  KEEP FOCUS
+                </button>
+                <button
+                  id="focus-exit-confirm"
+                  class="focus-confirmation-button confirm"
+                  type="submit"
+                  disabled
+                >
+                  END FOCUS
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="day-complete" class="day-complete-view" aria-label="Day complete" hidden>
+      <div class="day-complete-particles" aria-hidden="true">
+        <span class="particle particle-1"></span>
+        <span class="particle particle-2"></span>
+        <span class="particle particle-3"></span>
+        <span class="particle particle-4"></span>
+        <span class="particle particle-5"></span>
+        <span class="particle particle-6"></span>
+        <span class="particle particle-7"></span>
+        <span class="particle particle-8"></span>
+        <span class="particle particle-9"></span>
+        <span class="particle particle-10"></span>
+        <span class="particle particle-11"></span>
+        <span class="particle particle-12"></span>
+        <span class="particle particle-13"></span>
+        <span class="particle particle-14"></span>
+        <span class="particle particle-15"></span>
+        <span class="particle particle-16"></span>
+        <span class="particle particle-17"></span>
+        <span class="particle particle-18"></span>
+      </div>
+
+      <div class="day-complete-content">
+        <p class="day-complete-eyebrow">DAY COMPLETE</p>
+        <h1 id="day-complete-date" class="day-complete-date"></h1>
+
+        <button
+          id="day-complete-toggle"
+          class="day-complete-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="day-complete-details"
+        >
+          <span id="day-complete-count"></span>
+        </button>
+        <p id="day-complete-focused" class="day-complete-focused"></p>
+
+        <div
+          id="day-complete-details"
+          class="day-complete-details"
+          aria-hidden="true"
+        >
+          <div class="day-complete-details-inner">
+            <p class="day-complete-details-label">Completed today</p>
+            <ul id="day-complete-list" class="day-complete-list"></ul>
+          </div>
+        </div>
+
+        <div class="day-complete-actions">
+          <button id="day-complete-moment" class="day-complete-button primary" type="button">
+            Take a moment
+          </button>
+          <button id="day-complete-more" class="day-complete-button" type="button">
+            Add more tasks
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <p id="live-region" class="visually-hidden" aria-live="polite"></p>
+
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
